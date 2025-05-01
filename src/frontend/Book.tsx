@@ -2,37 +2,43 @@ import React, { useState, useEffect } from "react";
 import "../stylesheets/BookViewer.css";
 import { Link } from "react-router-dom";
 
-const Book = () => {
-  const [rating, setRating] = useState(0);
-  const [averageRating, setAverageRating] = useState(0);
+const Book: React.FC = () => {
+  const [rating, setRating] = useState<number>(0);
+  const [averageRating, setAverageRating] = useState<number>(0);
 
-  // Load previous ratings from localStorage on component mount
+  // Load previous ratings from localStorage on mount
   useEffect(() => {
-    const storedRatings = JSON.parse(localStorage.getItem("bookRatings")) || [];
+    const storedValue = localStorage.getItem("bookRatings") || "[]"; // Ensure it's a string
+    const storedRatings: number[] = JSON.parse(storedValue);
+
     if (storedRatings.length > 0) {
       const avg =
-        storedRatings.reduce((sum, r) => sum + r, 0) / storedRatings.length;
-      setAverageRating(avg.toFixed(1)); // Keep one decimal place
+        storedRatings.reduce((sum: number, r: number) => sum + r, 0) /
+        storedRatings.length;
+      setAverageRating(parseFloat(avg.toFixed(1))); // Ensure numeric format
     }
   }, []);
 
-  // Function to handle rating selection and store in localStorage
-  const handleRating = (newRating) => {
+  // Handle rating and update localStorage
+  const handleRating = (newRating: number) => {
     setRating(newRating);
 
-    const storedRatings = JSON.parse(localStorage.getItem("bookRatings")) || [];
+    const storedValue = localStorage.getItem("bookRatings") || "[]"; // Ensure it's a string
+    const storedRatings: number[] = JSON.parse(storedValue);
     storedRatings.push(newRating);
 
     localStorage.setItem("bookRatings", JSON.stringify(storedRatings));
 
     const avg =
-      storedRatings.reduce((sum, r) => sum + r, 0) / storedRatings.length;
-    setAverageRating(avg.toFixed(1));
+      storedRatings.reduce((sum: number, r: number) => sum + r, 0) /
+      storedRatings.length;
+    setAverageRating(parseFloat(avg.toFixed(1))); // Ensure numeric format
   };
 
   return (
     <div className="book-viewer">
       <h1 className="book-title">Time, Income, Happiness</h1>
+
       {/* Embedded Google iframe */}
       <div className="iframe-container">
         <iframe
@@ -40,6 +46,7 @@ const Book = () => {
           allowFullScreen
         ></iframe>
       </div>
+
       {/* Star Rating Input */}
       <div className="rating-container">
         <p>Rate this book:</p>
@@ -53,15 +60,16 @@ const Book = () => {
           </button>
         ))}
       </div>
+
       <p>Your rating: {rating > 0 ? `${rating} stars` : "Not rated yet"}</p>
       <p>
         Average rating:{" "}
         {averageRating > 0 ? `${averageRating} stars` : "No ratings yet"}
       </p>
+
       <Link to="/" style={{ display: "block", textAlign: "center" }}>
         Back
       </Link>
-      ;
     </div>
   );
 };
